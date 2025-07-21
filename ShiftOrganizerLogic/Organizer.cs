@@ -53,7 +53,7 @@ namespace ShiftOrganizerLogic
             }
         }
 
-        private void checkForEmptyShits()
+        private bool checkForEmptyShits()
         {
             foreach(DateTime shiftTime in r_AllShiftsStartTimes)
             {
@@ -63,16 +63,30 @@ namespace ShiftOrganizerLogic
                     {
                         r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift - shiftEmployees.Count;
                     }
-                    //finish checking and add return value
+                }
+                else
+                {
+                    r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift;
                 }
             }
+            foreach (KeyValuePair<DateTime, int> emptyShift in r_EmptyShifts)
+            {
+                if (emptyShift.Value > 0)
+                {
+                    return false; // There are still empty shifts
+                }
+            }
+            return true; // All shifts are filled
         }
 
         public void GenerateNewShiftsTable()
         {
             sortAllShiftsPerWorker();
             fillTable();
-
+            if (checkForEmptyShits())
+            {
+                return
+            }
             //when all shifts ended in all employees locate empty slots in table
             //if null return ok
             //else return list of empty shifts

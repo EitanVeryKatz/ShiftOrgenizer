@@ -40,6 +40,7 @@
     <Compile Include="Organizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Shift.cs" />
+    <Compile Include="ShiftSortSolve.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

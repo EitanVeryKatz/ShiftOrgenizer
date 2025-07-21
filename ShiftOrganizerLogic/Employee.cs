@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShiftOrganizerLogic
 {
-    internal class Employee
+    public class Employee
     {
         public readonly List<Shift> r_Shifts = new List<Shift>();
         public readonly List<Shift> r_MarkedShifts = new List<Shift>();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShiftOrganizerLogic
 {
-    internal class Shift
+    public class Shift
     {
         public DateTime ShiftStart { get; private set; }
         public Employee Employee { get; private set; }
