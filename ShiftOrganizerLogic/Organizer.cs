@@ -49,26 +49,13 @@ namespace ShiftOrganizerLogic
                 if (r_ShiftTable[shift.ShiftStart].Count() < k_MaxEmployeesPerShift)
                 {
                     r_ShiftTable[shift.ShiftStart].Add(shift.Employee);
+                    r_EmptyShifts[shift.ShiftStart]--;
                 }
             }
         }
 
         private bool checkForEmptyShits()
         {
-            foreach(DateTime shiftTime in r_AllShiftsStartTimes)
-            {
-                if(r_ShiftTable.TryGetValue(shiftTime,out List<Employee> shiftEmployees))
-                {
-                    if (shiftEmployees.Count < k_MinEmployeesPerShift)
-                    {
-                        r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift - shiftEmployees.Count;
-                    }
-                }
-                else
-                {
-                    r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift;
-                }
-            }
             foreach (KeyValuePair<DateTime, int> emptyShift in r_EmptyShifts)
             {
                 if (emptyShift.Value > 0)
@@ -79,17 +66,24 @@ namespace ShiftOrganizerLogic
             return true; // All shifts are filled
         }
 
-        public void GenerateNewShiftsTable()
+        public ShiftSortSolve GenerateNewShiftsTable()
         {
             sortAllShiftsPerWorker();
             fillTable();
-            if (checkForEmptyShits())
+            bool wasSuccesful = checkForEmptyShits();
+
+            return new ShiftSortSolve(r_ShiftTable, r_EmptyShifts, wasSuccesful);
+        }
+
+        public Organizer(HashSet<DateTime> i_AllShiftStartTimes)
+        {
+            r_AllShiftsStartTimes = i_AllShiftStartTimes;
+            r_Employees = new List<Employee>();
+            foreach (DateTime shiftTime in r_AllShiftsStartTimes)
             {
-                return
+                r_ShiftTable[shiftTime] = new List<Employee>();
+                r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift;
             }
-            //when all shifts ended in all employees locate empty slots in table
-            //if null return ok
-            //else return list of empty shifts
         }
     }
 }

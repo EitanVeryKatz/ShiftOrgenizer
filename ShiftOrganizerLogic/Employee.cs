@@ -55,5 +55,23 @@ namespace ShiftOrganizerLogic
         {
             r_Shifts.OrderBy(s => s.Wheight);
         }
+
+        //CTOR gets a list of shifts and the list of all shifts from organizer,
+        //fills relevant data members and throws exception if a shift is missing
+        public Employee(string name, List<Shift> shifts, List<DateTime> allShifts)
+        {
+            Name = name;
+            foreach (Shift shift in shifts)
+            {
+                if (allShifts.Contains(shift.ShiftStart))
+                {
+                    r_Shifts.Add(shift);
+                }
+                else
+                {
+                    throw new Exception($"shift {shift.ShiftStart} is not in the list of all shifts");
+                }
+            }
+        }
     }
 }

@@ -10,7 +10,9 @@ namespace ShiftOrganizerLogic
     {
         public static void main()
         {
-
+            Organizer organizer = new Organizer();
+            
+           
         }
     }
 }
