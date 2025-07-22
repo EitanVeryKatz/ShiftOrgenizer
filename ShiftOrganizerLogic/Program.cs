@@ -29,6 +29,12 @@ namespace ShiftOrganizerLogic
                 Employee employee6 = new Employee("Eitan", new List<Shift>(), allShiftsStartTimes);
                 Employee employee7 = new Employee("Hilik", new List<Shift>(), allShiftsStartTimes);
                 Employee employee8 = new Employee("Tommy", new List<Shift>(), allShiftsStartTimes);
+
+                employee1.UpdateShiftManagerStatus(true); // Alice is a shift manager
+                employee2.UpdateShiftManagerStatus(true); // Bob is a shift manager
+                employee3.UpdateShiftManagerStatus(true); // Charlie is a shift manager
+                employee4.UpdateShiftManagerStatus(true); // Diana is a shift manager
+
                 List<Employee> employees = new List<Employee> { employee1, employee2, employee3, employee4
                                                                 , employee5, employee6, employee7, employee8 };
                 foreach (Employee employee in employees)

@@ -11,6 +11,7 @@ namespace ShiftOrganizerLogic
     {
         public readonly List<Shift> r_Shifts = new List<Shift>();
         public readonly List<Shift> r_MarkedShifts = new List<Shift>();
+        public bool IsShiftManager { get; set; } = false; //default is false, can be set to true if employee is a shift manager
         public string Name { get; set; }
         public int TotalWheight
         {
@@ -25,6 +26,10 @@ namespace ShiftOrganizerLogic
             }
         }
 
+        public void UpdateShiftManagerStatus(bool i_isShiftManeger = true)
+        {
+            IsShiftManager = i_isShiftManeger;
+        }
         public void MarkFirstShiftAsProccesed()
         {
             //sort of dequeue 

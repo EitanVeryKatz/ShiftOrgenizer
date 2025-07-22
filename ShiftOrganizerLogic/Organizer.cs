@@ -11,6 +11,7 @@ namespace ShiftOrganizerLogic
     internal class Organizer
     {
         internal readonly HashSet<DateTime> r_AllShiftsStartTimes = new HashSet<DateTime>();
+        internal readonly List<Employee> r_ShiftManegerEmployees;
         internal readonly List<Employee> r_Employees;
         internal readonly Dictionary<DateTime, List<Employee>> r_ShiftTable = new Dictionary<DateTime, List<Employee>>();
         internal readonly List<Shift> r_ShiftQueue = new List<Shift>();
@@ -29,6 +30,18 @@ namespace ShiftOrganizerLogic
                 return total;
             }
         }
+        public int AllUnmarkedShiftsForAllSMEmployees
+        {
+            get
+            {
+                int total = 0;
+                foreach (Employee e in r_ShiftManegerEmployees)
+                {
+                    total += e.r_Shifts.Count;
+                }
+                return total;
+            }
+        }
 
         private void sortAllShiftsPerWorker()
         {
@@ -36,9 +49,22 @@ namespace ShiftOrganizerLogic
             {
                 employee.sortShifts();
             }
-            // sort employees by total weight of shifts descending
+            foreach (Employee employee in r_ShiftManegerEmployees)
+            {
+                employee.sortShifts();
+            }
+            // sort employees by total weight of shifts descending but shiftmanagers first always
             r_Employees.Sort((x, y) => y.TotalWheight.CompareTo(x.TotalWheight));
-            while(AllUnmarkedShiftsForAllEmployees > 0)
+
+            while (AllUnmarkedShiftsForAllSMEmployees > 0)
+            {
+                foreach (Employee employee in r_ShiftManegerEmployees)
+                {
+                    r_ShiftQueue.Add(employee.r_Shifts.First());
+                    employee.MarkFirstShiftAsProccesed();
+                }
+            }
+            while (AllUnmarkedShiftsForAllEmployees > 0)
             {
                 foreach (Employee employee in r_Employees) 
                 {
@@ -98,6 +124,7 @@ namespace ShiftOrganizerLogic
         {
             r_AllShiftsStartTimes = i_AllShiftStartTimes;
             r_Employees = new List<Employee>();
+            r_ShiftManegerEmployees = new List<Employee>();
             r_MinEmployeesPerShift = i_MinEmployeesInShift;
             r_MaxEmployeesPerShift= i_MaxEmployeesInShift;
             foreach (DateTime shiftTime in r_AllShiftsStartTimes)
@@ -113,7 +140,14 @@ namespace ShiftOrganizerLogic
             {
                 if (!r_Employees.Contains(employee))
                 {
-                    r_Employees.Add(employee);
+                    if (employee.IsShiftManager)
+                    {
+                        r_Employees.Add(employee);
+                    }
+                    else
+                    {
+                        r_ShiftManegerEmployees.Add(employee);
+                    }
                 }
                 else
                 {
@@ -132,7 +166,7 @@ namespace ShiftOrganizerLogic
 
         private bool isEmployeeNeededForShift(Shift i_shift)
         {
-            return i_shift.Wheight>0||r_ShiftTable[i_shift.ShiftStart].Count < r_MinEmployeesPerShift;
+            return i_shift.Wheight>1||r_ShiftTable[i_shift.ShiftStart].Count < r_MinEmployeesPerShift;
         }
     }
 }
