@@ -15,8 +15,20 @@ namespace ShiftOrganizerLogic
         internal readonly Dictionary<DateTime, List<Employee>> r_ShiftTable = new Dictionary<DateTime, List<Employee>>();
         internal readonly List<Shift> r_ShiftQueue = new List<Shift>();
         internal readonly Dictionary<DateTime, int> r_EmptyShifts = new Dictionary<DateTime, int>();
-        private const int k_MaxEmployeesPerShift = 1;//change in ctor
-        private const int k_MinEmployeesPerShift = 1;
+        private readonly int r_MaxEmployeesPerShift;
+        private readonly int r_MinEmployeesPerShift;
+        public int AllUnmarkedShiftsForAllEmployees
+        {
+            get
+            {
+                int total = 0;
+                foreach (Employee e in r_Employees)
+                {
+                    total += e.r_Shifts.Count;
+                }
+                return total;
+            }
+        }
 
         private void sortAllShiftsPerWorker()
         {
@@ -26,13 +38,12 @@ namespace ShiftOrganizerLogic
             }
             // sort employees by total weight of shifts descending
             r_Employees.Sort((x, y) => y.TotalWheight.CompareTo(x.TotalWheight));
-            while(r_Employees.Count > 0)
+            while(AllUnmarkedShiftsForAllEmployees > 0)
             {
                 foreach (Employee employee in r_Employees) 
                 {
                     r_ShiftQueue.Add(employee.r_Shifts.First());
                     employee.MarkFirstShiftAsProccesed();
-                
                 }
             }
         }
@@ -46,12 +57,20 @@ namespace ShiftOrganizerLogic
                     r_ShiftTable[shift.ShiftStart] = new List<Employee>();
                 }
 
-                if (r_ShiftTable[shift.ShiftStart].Count() < k_MaxEmployeesPerShift)
+                if (r_ShiftTable[shift.ShiftStart].Count() < r_MaxEmployeesPerShift )
                 {
-                    r_ShiftTable[shift.ShiftStart].Add(shift.Employee);
-                    r_EmptyShifts[shift.ShiftStart]--;
+                    if (isEmployeeNotInAdjacentShifts(shift.Employee, shift) && isEmployeeNeededForShift(shift)) 
+                    {
+                        insertShift(shift);
+                    }
                 }
             }
+        }
+
+        private void insertShift(Shift i_Shift)
+        {
+            r_ShiftTable[i_Shift.ShiftStart].Add(i_Shift.Employee);
+            r_EmptyShifts[i_Shift.ShiftStart]--;
         }
 
         private bool checkForEmptyShits()
@@ -75,14 +94,16 @@ namespace ShiftOrganizerLogic
             return new ShiftSortSolve(r_ShiftTable, r_EmptyShifts, wasSuccesful);
         }
 
-        public Organizer(HashSet<DateTime> i_AllShiftStartTimes)
+        public Organizer(HashSet<DateTime> i_AllShiftStartTimes,int i_MinEmployeesInShift = 1, int i_MaxEmployeesInShift = 1)
         {
             r_AllShiftsStartTimes = i_AllShiftStartTimes;
             r_Employees = new List<Employee>();
+            r_MinEmployeesPerShift = i_MinEmployeesInShift;
+            r_MaxEmployeesPerShift= i_MaxEmployeesInShift;
             foreach (DateTime shiftTime in r_AllShiftsStartTimes)
             {
                 r_ShiftTable[shiftTime] = new List<Employee>();
-                r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift;
+                r_EmptyShifts[shiftTime] = r_MinEmployeesPerShift;
             }
         }
 
@@ -99,6 +120,19 @@ namespace ShiftOrganizerLogic
                     throw new Exception($"failed to add employee {employee.Name} to organizer");
                 }
             }
+        }
+
+        private bool isEmployeeNotInAdjacentShifts(Employee i_employee, Shift i_shift)
+        {
+            bool notInNextShift = !(r_ShiftTable.TryGetValue(i_shift.NextShiftStart, out var employeesForNextShift) && employeesForNextShift.Contains(i_shift.Employee));
+            bool notInPrevShift = !(r_ShiftTable.TryGetValue(i_shift.PrevShiftStart, out var employeesForPrevShift) && employeesForPrevShift.Contains(i_shift.Employee));
+
+            return notInNextShift && notInPrevShift;
+        }
+
+        private bool isEmployeeNeededForShift(Shift i_shift)
+        {
+            return i_shift.Wheight>0||r_ShiftTable[i_shift.ShiftStart].Count < r_MinEmployeesPerShift;
         }
     }
 }

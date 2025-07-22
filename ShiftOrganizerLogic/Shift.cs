@@ -8,6 +8,7 @@ namespace ShiftOrganizerLogic
 {
     public class Shift
     {
+        private TimeSpan m_ShiftLength = TimeSpan.FromHours(8);
         public DateTime ShiftStart { get; private set; }
         public Employee Employee { get; private set; }
         public int Wheight { get; set; }
@@ -17,5 +18,22 @@ namespace ShiftOrganizerLogic
             Wheight = i_Wheight;
             Employee = i_employee;
         }
+
+        public DateTime NextShiftStart
+        {
+            get
+            {
+                return ShiftStart + m_ShiftLength;
+            }
+        }
+        public DateTime PrevShiftStart
+        {
+            get
+            {
+                return ShiftStart - m_ShiftLength;
+            }
+        }
+
+
     }
 }

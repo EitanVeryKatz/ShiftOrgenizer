@@ -20,12 +20,17 @@ namespace ShiftOrganizerLogic
                     allShiftsStartTimes.Add(DateTime.Now.AddHours(i * 8));
                 }
                 Random random = new Random();
-                Organizer organizer = new Organizer(allShiftsStartTimes);
+                Organizer organizer = new Organizer(allShiftsStartTimes,1,3);
                 Employee employee1 = new Employee("Alice", new List<Shift>(), allShiftsStartTimes);
                 Employee employee2 = new Employee("Bob", new List<Shift>(), allShiftsStartTimes);
                 Employee employee3 = new Employee("Charlie", new List<Shift>(), allShiftsStartTimes);
                 Employee employee4 = new Employee("Diana", new List<Shift>(), allShiftsStartTimes);
-                List<Employee> employees = new List<Employee> { employee1, employee2, employee3, employee4 };
+                Employee employee5 = new Employee(" Moti", new List<Shift>(), allShiftsStartTimes);
+                Employee employee6 = new Employee("Eitan", new List<Shift>(), allShiftsStartTimes);
+                Employee employee7 = new Employee("Hilik", new List<Shift>(), allShiftsStartTimes);
+                Employee employee8 = new Employee("Tommy", new List<Shift>(), allShiftsStartTimes);
+                List<Employee> employees = new List<Employee> { employee1, employee2, employee3, employee4
+                                                                , employee5, employee6, employee7, employee8 };
                 foreach (Employee employee in employees)
                 {
                     foreach (DateTime shiftStart in allShiftsStartTimes)
