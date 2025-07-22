@@ -51,14 +51,28 @@ namespace ShiftOrganizerLogic
             }
         }
 
+        public void SetPrefranceForShift(DateTime shiftStart, int weight = 0)
+        {
+            Shift shift = r_Shifts.FirstOrDefault(s => s.ShiftStart == shiftStart);
+            if (shift != null)
+            {
+                shift.Wheight = weight;
+            }
+            else
+            {
+                throw new Exception($"shift {shiftStart} not found for employee {Name}");
+            }
+        }
+
         internal void sortShifts()
         {
-            r_Shifts.OrderBy(s => s.Wheight);
+            //sort shifts by weight in descending order
+            r_Shifts.Sort((x, y) => y.Wheight.CompareTo(x.Wheight));
         }
 
         //CTOR gets a list of shifts and the list of all shifts from organizer,
         //fills relevant data members and throws exception if a shift is missing
-        public Employee(string name, List<Shift> shifts, List<DateTime> allShifts)
+        public Employee(string name, List<Shift> shifts, HashSet<DateTime> allShifts)
         {
             Name = name;
             foreach (Shift shift in shifts)

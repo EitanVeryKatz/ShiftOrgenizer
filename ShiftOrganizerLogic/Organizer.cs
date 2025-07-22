@@ -24,8 +24,8 @@ namespace ShiftOrganizerLogic
             {
                 employee.sortShifts();
             }
-
-            r_Employees.OrderBy(p=>p.TotalWheight);
+            // sort employees by total weight of shifts descending
+            r_Employees.Sort((x, y) => y.TotalWheight.CompareTo(x.TotalWheight));
             while(r_Employees.Count > 0)
             {
                 foreach (Employee employee in r_Employees) 
@@ -83,6 +83,21 @@ namespace ShiftOrganizerLogic
             {
                 r_ShiftTable[shiftTime] = new List<Employee>();
                 r_EmptyShifts[shiftTime] = k_MinEmployeesPerShift;
+            }
+        }
+
+        public void AddEmployees(List<Employee> i_Employees)
+        {
+            foreach (Employee employee in i_Employees)
+            {
+                if (!r_Employees.Contains(employee))
+                {
+                    r_Employees.Add(employee);
+                }
+                else
+                {
+                    throw new Exception($"failed to add employee {employee.Name} to organizer");
+                }
             }
         }
     }
